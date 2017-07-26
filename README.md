@@ -1,24 +1,23 @@
 ## Run CLI
 
-1. Git clone:
+1. Git clone and install requirements:
 ```
-$ git clone git@github.com:kewtree1408/sitemapper.git
+git clone git@github.com:kewtree1408/sitemapper.git
+cd sitemapper
+virtualenv .venv
+source .venv/bin/activate
+pip install -r req.txt
 ```
+Note: Run on Linux/MacOS only.
 
-2. Install requirements:
+2. Getting the sitemap:
 ```
-$ pip install -r req.txt
-```
-
-3. Getting the sitemap:
-```
-$ cd sitemapper
-$ ./sitemapper/cli.py --url=https://www.python.org --proto-format=file
-$ ./sitemapper/cli.py --url=https://www.python.org --proto-format=xml
+$ ./cli.py --url=https://www.python.org --proto-format=file
+$ ./cli.py --url=https://www.python.org --proto-format=xml
 ```
 
 ## Tests
-$ tox
+$ tox --
 
 
 ### Warning
