@@ -4,6 +4,7 @@
 ```
 git clone git@github.com:kewtree1408/sitemapper.git
 cd sitemapper
+pip install virtualenv
 virtualenv .venv
 source .venv/bin/activate
 pip install -r req.txt
