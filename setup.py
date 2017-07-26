@@ -8,15 +8,6 @@ from setuptools import (
 import re
 import os
 
-
-def get_version(package):
-    """
-    Return package version as listed in `__version__` in `init.py`.
-    """
-    init_py = open(os.path.join(package, '__init__.py')).read()
-    return re.match("__version__ = ['\"]([^'\"]+)['\"]", init_py).group(1)
-
-
 def get_packages(package):
     """
     Return root package and all sub-packages.
@@ -45,9 +36,10 @@ def get_package_data(package):
 packages = find_packages('src')
 packages_data = get_package_data('src')
 
+
 setup(
     name='sitemapper',
-    version=version,
+    version='0.1',
     url='https://github.com/kewtree1408/sitemapper/',
     license='BSD',
     description='',

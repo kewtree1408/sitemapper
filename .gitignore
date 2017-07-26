@@ -6,4 +6,4 @@
 .server-script
 .venv
 .tox
-sitemap*
+sitemap.*

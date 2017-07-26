@@ -6,17 +6,17 @@ from lxml import etree
 from crawler import Crawler
 
 
-def write_into_file(url, fname):
+def write_into_file(url, fname, depth=5):
     """
     Create and save the sitemap data in the <fname> file.
     """
     with codecs.open(fname, "w", "utf-8") as f:
-        for link in Crawler(url).get_flatten_urls():
+        for link in Crawler(url, depth).get_flatten_urls():
             f.write(link)
             f.write('\n')
 
 
-def xml_output(url, default=False):
+def xml_output(url, default=False, depth=5):
     """
     XML output for sitemap.
     Following this protocol: https://www.sitemaps.org/protocol.html
@@ -33,7 +33,7 @@ def xml_output(url, default=False):
     """
     root = etree.Element('urlset',
                          xmlns="http://www.sitemaps.org/schemas/sitemap/0.9")
-    for url_data in Crawler(url).get_all_info(default):
+    for url_data in Crawler(url, depth).get_all_info(default):
         # url_data is a crawler.MetaData object
         root.append(url_data.xml())
     return root
@@ -53,6 +53,8 @@ def xml_file_output(url, fname, default=False):
 
 
 def get_root_url(long_url):
+    if not long_url.endswith('/'):
+        long_url += '/'
     root_urls = re.findall(r'\w+://.*?/', long_url, flags=re.IGNORECASE)
     root_url = root_urls[0] if root_urls else long_url
     return root_url
