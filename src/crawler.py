@@ -57,7 +57,6 @@ class Crawler(object):
         """
         All urls are stored there.
         """
-        import pdb; pdb.set_trace()
         return list(self.get_all_urls(self.root))
 
     def get_all_info(self, default=False):

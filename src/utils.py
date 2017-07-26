@@ -11,7 +11,7 @@ def write_into_file(url, fname):
     Create and save the sitemap data in the <fname> file.
     """
     with codecs.open(fname, "w", "utf-8") as f:
-        for link in Crawler(url).get_hrefs():
+        for link in Crawler(url).get_flatten_urls():
             f.write(link)
             f.write('\n')
 
@@ -31,7 +31,8 @@ def xml_output(url, default=False):
       <priority>0.8</priority>
    </url>
     """
-    root = etree.Element('urlset')
+    root = etree.Element('urlset',
+                         xmlns="http://www.sitemaps.org/schemas/sitemap/0.9")
     for url_data in Crawler(url).get_all_info(default):
         # url_data is a crawler.MetaData object
         root.append(url_data.xml())
@@ -41,7 +42,14 @@ def xml_output(url, default=False):
 def xml_file_output(url, fname, default=False):
     urls_tree = xml_output(url, default)
     with codecs.open(fname, "w", "utf-8") as f:
-        f.write(etree.tostring(urls_tree, pretty_print=True))
+        f.write(
+                etree.tostring(
+                    urls_tree,
+                    pretty_print=True,
+                    xml_declaration=True,
+                    encoding='UTF-8'
+                )
+            )
 
 
 def get_root_url(long_url):
