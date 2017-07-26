@@ -34,10 +34,10 @@ class Crawler(object):
     Following the rules on https://www.sitemaps.org/protocol.html
     """
 
-    def __init__(self, root_url):
+    def __init__(self, root_url, depth=5):
         self.root = root_url if root_url.endswith('/') else root_url+'/'
         self.any_proto = root_url.split('://', 1)[-1]
-        self.max_depth = 10
+        self.max_depth = depth
 
     def get_all_urls(self, url, flatten_map=None):
         if not flatten_map:
