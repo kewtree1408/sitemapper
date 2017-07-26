@@ -6,7 +6,7 @@ from lxml import etree
 
 
 class MetaData(object):
-    def __init__(self, location, lastmod=None, changefreq=None, priority=1):
+    def __init__(self, location, lastmod=None, changefreq=None, priority=0.5):
         self.location = location
         self.lastmod = lastmod
         self.changefreq = changefreq
@@ -37,55 +37,53 @@ class Crawler(object):
     def __init__(self, root_url):
         self.root = root_url if root_url.endswith('/') else root_url+'/'
         self.any_proto = root_url.split('://', 1)[-1]
+        self.max_depth = 10
 
-    def _iter_re_for_href(self, data):
-        """
-        :param data: raw data from the url with differents hrefs, such as:
-        <a href="(pattern=https://docs.python.org/3/library/asyncio.html)">
-        or
-        <a href='(pattern=https://docs.python.org/3/library/asyncio.html)'>
-        :return: generator
-        """
-        for item in re.finditer(
-            r'<a href=["|\'](?P<href>.*?)["|\']',
-            data,
-            flags=re.IGNORECASE
-        ):
-            yield item.group('href')
+    def get_all_urls(self, url, flatten_map=None):
+        if not flatten_map:
+            flatten_map = set()
 
-    def urls(self):
+        if len(flatten_map) > self.max_depth:
+            return flatten_map
+
+        for href in self.get_hrefs_per_page(url):
+            if href not in flatten_map:
+                flatten_map.add(href)
+                self.get_all_urls(href, flatten_map)
+
+        return flatten_map
+
+    def get_flatten_urls(self):
         """
-        All hierarhy is stored there.
+        All urls are stored there.
         """
-        for href in self.get_hrefs():
-            print href
+        import pdb; pdb.set_trace()
+        return list(self.get_all_urls(self.root))
 
     def get_all_info(self, default=False):
         default_params = {
             'lastmod': utils.get_text_date(datetime.datetime.today()),
-            'changefreq': 'month',
-            'priority': 0.1,
+            'changefreq': 'always',
         }
 
-        for href in self.get_hrefs():
+        for href in self.get_flatten_urls():
             if default:
                 yield MetaData(
                     location=href,
                     lastmod=default_params['lastmod'],
                     changefreq=default_params['changefreq'],
-                    priority=default_params['priority'],
                 )
             else:
                 yield MetaData(location=href)
 
-    def get_hrefs(self):
-        data = requests.get(self.root)
+    def get_hrefs_per_page(self, url):
+        data = requests.get(url)
         if data.status_code != 200:
             yield None
 
         utf_data = data.content
 
-        for href in self._iter_re_for_href(utf_data):
+        for href in utils.iter_re_for_href(utf_data):
             href = href.decode('utf-8')
             if href.startswith(self.root):
                 yield href

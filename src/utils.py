@@ -44,17 +44,26 @@ def xml_file_output(url, fname, default=False):
         f.write(etree.tostring(urls_tree, pretty_print=True))
 
 
-def clear_href(raw_href):
-    """
-    :param raw_href: https://ru.wikipedia.org/wiki/ " title="\xd0\x9a" ... >
-    :return: https://ru.wikipedia.org/wiki/
-    """
-    pass
-
 def get_root_url(long_url):
     root_urls = re.findall(r'\w+://.*?/', long_url, flags=re.IGNORECASE)
     root_url = root_urls[0] if root_urls else long_url
     return root_url
+
+
+def iter_re_for_href(data):
+    """
+    :param data: raw data from the url with differents hrefs, such as:
+    <a href="(pattern=https://docs.python.org/3/library/asyncio.html)">
+    or
+    <a href='(pattern=https://docs.python.org/3/library/asyncio.html)'>
+    :return: generator
+    """
+    for item in re.finditer(
+        r'<a href=["|\'](?P<href>.*?)["|\']',
+        data,
+        flags=re.IGNORECASE
+    ):
+        yield item.group('href')
 
 
 def get_text_date(date):
