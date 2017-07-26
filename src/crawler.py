@@ -76,7 +76,11 @@ class Crawler(object):
                 yield MetaData(location=href)
 
     def get_hrefs_per_page(self, url):
-        data = requests.get(url)
+        try:
+            data = requests.get(url)
+        except requests.exceptions.MissingSchema:
+            return 
+
         if data.status_code != 200:
             yield None
 
