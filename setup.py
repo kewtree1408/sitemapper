@@ -42,7 +42,7 @@ setup(
     version='0.1',
     url='https://github.com/kewtree1408/sitemapper/',
     license='BSD',
-    description='',
+    description='The command line interface for getting a sitemap for any site',
     author='Victoria Karpova',
     author_email='me@vika.space',
     package_dir={'': 'src'},
