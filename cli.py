@@ -1,7 +1,11 @@
 #!/usr/bin/env python
 
 import click
-from src.utils import get_root_url, get_file_sitemap
+from src.utils import (
+    get_root_url,
+    write_into_file,
+    xml_file_output,
+)
 
 
 @click.command()
@@ -17,10 +21,13 @@ from src.utils import get_root_url, get_file_sitemap
 def get_sitemap(url, proto_format):
     root_url = get_root_url(url)
     if proto_format == 'file':
-        get_file_sitemap(url)
-        click.echo("Look at your sitemap in <sitemap.txt>")
+        fname = 'sitemap.txt'
+        write_into_file(url, fname)
+        click.echo("Look at your sitemap in <%s>" % fname)
     else:
-        click.echo("Not implemented yet")
+        fname = 'sitemap.xml'
+        xml_file_output(url, fname, default=True)
+        click.echo("Look at your sitemap in <%s>" % fname)
 
 
 if __name__ == '__main__':

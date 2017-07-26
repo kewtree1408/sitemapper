@@ -1,13 +1,31 @@
 import requests
 import re
 import utils
+import datetime
+from lxml import etree
+
 
 class MetaData(object):
-    def __init__(self, location, lastmod=None, changefreq=None, priority=None):
+    def __init__(self, location, lastmod=None, changefreq=None, priority=1):
         self.location = location
         self.lastmod = lastmod
         self.changefreq = changefreq
         self.priority = priority
+
+    def xml(self):
+        """
+        :return: etree.Element with meta data
+        """
+        url = etree.Element('url')
+        loc = etree.SubElement(url, 'loc')
+        loc.text = self.location
+        lastmod = etree.SubElement(url, 'lastmod')
+        lastmod.text = self.lastmod
+        changefreq = etree.SubElement(url, 'changefreq')
+        changefreq.text = self.changefreq
+        priority = etree.SubElement(url, 'priority')
+        priority.text = str(self.priority)
+        return url
 
 
 class Crawler(object):
@@ -42,6 +60,24 @@ class Crawler(object):
         for href in self.get_hrefs():
             print href
 
+    def get_all_info(self, default=False):
+        default_params = {
+            'lastmod': utils.get_text_date(datetime.datetime.today()),
+            'changefreq': 'month',
+            'priority': 0.1,
+        }
+
+        for href in self.get_hrefs():
+            if default:
+                yield MetaData(
+                    location=href,
+                    lastmod=default_params['lastmod'],
+                    changefreq=default_params['changefreq'],
+                    priority=default_params['priority'],
+                )
+            else:
+                yield MetaData(location=href)
+
     def get_hrefs(self):
         data = requests.get(self.root)
         if data.status_code != 200:
@@ -51,13 +87,11 @@ class Crawler(object):
 
         for href in self._iter_re_for_href(utf_data):
             href = href.decode('utf-8')
-            # yield href
             if href.startswith(self.root):
                 yield href
             elif href.startswith('//'):
                 # pass double slashes
                 clear_href = href[2:]
-                # print clear_href
                 if clear_href.startswith(self.any_proto):
                     yield clear_href
             elif href.startswith('/'):

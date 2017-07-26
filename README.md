@@ -1,6 +1,6 @@
 1. Install requirements:
 ```
-pip install req.txt
+pip install -r req.txt
 ```
 
 2. Run cli:
