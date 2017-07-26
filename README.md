@@ -17,7 +17,7 @@ $ ./sitemapper/cli.py --url=https://www.python.org --proto-format=file
 $ ./sitemapper/cli.py --url=https://www.python.org --proto-format=xml
 ```
 
-## Tests:
+## Tests
 $ tox
 
 
